@@ -30,7 +30,7 @@ guild_id = [961443814101360661]
 class informaiton():
     member: any
     log: list
-    
+
 # 관리 정보
 informs = []
 
@@ -63,7 +63,7 @@ async def on_member_update(before, after):
 
   
 # 적발 횟수 출력
-@slash.slash(name="CaughtCnt", description="적발횟수를 출력합니다.", guild_ids = guild_id)
+@slash.slash(name="Count", description="적발횟수를 출력합니다.", guild_ids = guild_id)
 async def MyCnt(ctx):
 
     # 적발횟수를 묻는 대상이 감시 대상이라면
@@ -74,7 +74,7 @@ async def MyCnt(ctx):
         await ctx.send("{}님은 감시대상이 아닙니다. 감시 대상으로 등록해주세요.".format(ctx.author.name))
 
 # 적발 로그 출력
-@slash.slash(name="CaughtLog", description="적발로그를 출력합니다.", guild_ids = guild_id)
+@slash.slash(name="Log", description="적발로그를 출력합니다.", guild_ids = guild_id)
 async def MyLog(ctx):
 
     # 적발로그를 묻는 대상이 감시 대상이라면
@@ -93,7 +93,7 @@ async def MyLog(ctx):
         await ctx.send("{}님은 감시대상이 아닙니다. 감시 대상으로 등록해주세요.".format(ctx.author.name))    
 
 # 적발 로그 지우기
-@slash.slash(name="RemoveCaught", description="적발로그를 삭제합니다.", guild_ids = guild_id)
+@slash.slash(name="RemoveLog", description="적발로그를 삭제합니다.", guild_ids = guild_id)
 async def RemoveLog(ctx, membername, lognum):
 
     if (ctx.author.id == 271493892224843777):
