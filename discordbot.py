@@ -67,7 +67,7 @@ async def on_member_update(before, after):
                         await channel.send("{} 님이 {} 활동을 해제하고 {} 활동을 시작했습니다.".format(members[cnt].name, before.activities[0].name, after.activities[0].name))
                         membersInformation[cnt].caught.append("{} 님이 {} 활동을 해제하고 {} 활동을 시작했습니다.".format(members[cnt].name, before.activities[0].name, after.activities[0].name))
         """
-
+  
 # 적발 횟수 출력
 @slash.slash(name="CaughtCnt", description="적발횟수를 출력합니다.", guild_ids = guild_id)
 async def CaughtCnt(ctx):
