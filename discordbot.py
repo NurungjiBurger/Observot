@@ -7,7 +7,12 @@ import threading
 from discord_slash import SlashCommand, SlashContext
 from dataclasses import dataclass
 from discord.ext import commands
-from to import Token
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+Token = os.getenv('token')
+
 
 intents = discord.Intents.all()
 client = discord.Client()
@@ -44,14 +49,15 @@ async def on_member_update(before, after):
     catch = str()
     # 비활동 -> 게임중
     if (len(before.activities) > len(after.activities)):
-        if (before.name in members) :
-            await channel.send("{} 님이 {} 활동을 해제했습니다.".format(members[cnt].name, before.activities[0].name))
+        if (before.id in members) :
+            await channel.send("{} 님이 {} 활동을 해제했습니다.".format(before.name, before.activities[0].name))
     else :
         # 게임중 -> 비활동
         if (len(before.activities) < len(after.activities)) :
-            if (before.name in members) :
-                await channel.send("{} 님이 {} 활동을 시작했습니다.".format(members[cnt].name, after.activities[0].name))
-                membersInformation[cnt].caught.append("{} 님이 {} 활동을 시작했습니다.".format(members[cnt].name, after.activities[0].name))
+            if (before.id in members) :
+                str = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+                await channel.send("{} 님이 {} 활동을 시작했습니다.".format(before.name, after.activities[0].name))
+                membersInformation[members.index(before.name)].caught.append(str + " {} 님이 {} 활동을 시작했습니다.".format(before.name, after.activities[0].name))
         # 게임중 -> 게임중     
         """   
         else :
@@ -61,14 +67,14 @@ async def on_member_update(before, after):
                         await channel.send("{} 님이 {} 활동을 해제하고 {} 활동을 시작했습니다.".format(members[cnt].name, before.activities[0].name, after.activities[0].name))
                         membersInformation[cnt].caught.append("{} 님이 {} 활동을 해제하고 {} 활동을 시작했습니다.".format(members[cnt].name, before.activities[0].name, after.activities[0].name))
         """
-        
+
 # 적발 횟수 출력
 @slash.slash(name="CaughtCnt", description="적발횟수를 출력합니다.", guild_ids = guild_id)
 async def CaughtCnt(ctx):
 
     # 적발횟수를 묻는 대상이 감시 대상이라면
-    if (ctx.author.name in members) :
-        await ctx.send("{}님은 {}회 적발 되셨습니다.".format(ctx.author.name, len(membersInformation[cnt].caught)))
+    if (ctx.author.id in members) :
+        await ctx.send("{}님은 {}회 적발 되셨습니다.".format(ctx.author.name, len(membersInformation[members.index(ctx.author.id)].caught)))
     # 감시 대상이 아닌경우
     else :
         await ctx.send("{}님은 감시대상이 아닙니다. 감시 대상으로 등록해주세요.".format(ctx.author.name))
@@ -78,10 +84,10 @@ async def CaughtCnt(ctx):
 async def CaughtLog(ctx):
 
     # 적발로그를 묻는 대상이 감시 대상이라면
-    if (ctx.author.name in members) :
+    if (ctx.author.id in members) :
             log = ''
-            for lognum in range (len(membersInformation[members.index(ctx.author.name)].caught)):
-                log += "{}. {}\n".format(lognum+1, membersInformation[members.index(ctx.author.name)].caught[lognum])
+            for lognum in range (len(membersInformation[members.index(ctx.author.id)].caught)):
+                log += "{}. {}\n".format(lognum+1, membersInformation[members.index(ctx.author.id)].caught[lognum])
 
             await ctx.send(log)
 
@@ -93,10 +99,10 @@ async def CaughtLog(ctx):
 @slash.slash(name="RemoveCaught", description="적발로그를 삭제합니다.", guild_ids = guild_id)
 async def RemoveCaught(ctx, membername, lognum):
 
-    if (ctx.author.name == "화릿불"):
+    if (ctx.author.id == "271493892224843777"):
         # 적발로그를 지우려는 대상이 감시 대상이라면
-        if (ctx.author.name in members) :
-            del(membersInformation[members.index(ctx.author.name)].caught[int(lognum)-1])
+        if (ctx.author.id in members) :
+            del(membersInformation[members.index(ctx.author.id)].caught[int(lognum)-1])
             await ctx.send("{}님의 {}번째 적발은 철회되었습니다.".format(membername, lognum))
         # 감시 대상이 아닌경우
         else :
@@ -109,7 +115,7 @@ async def RemoveCaught(ctx, membername, lognum):
 async def Enroll(ctx):
 
     # 해당 감시를 요청한 멤버를 감시 명단에 투입    
-    if (ctx.author.name in members) :
+    if (ctx.author.id in members) :
         await ctx.send('{}님은 이미 감시중입니다.'.format(ctx.author.name))
     
     else :
@@ -140,10 +146,10 @@ async def Clear(ctx):
 
     # 리스트에 사람이 있을 경우
     if (len(members) > 0) :
-        if (ctx.author.name in members) :
+        if (ctx.author.id in members) :
             # 해당 감시 해제를 요청한 멤버를 감시 명단에서 제외
-            del(members[cnt])
-            del(membersInformation[cnt])
+            del(members[members.index(ctx.author.id)])
+            del(membersInformation[members.index(ctx.author.id)])
             await ctx.send ('{}님 감시를 해제합니다.'.format(ctx.author.name))
         
         else :
