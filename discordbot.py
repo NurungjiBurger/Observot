@@ -59,7 +59,7 @@ async def on_member_update(before, after):
             if (before in map(lambda x: x.member, informs)) :
                 str = time.strftime(' %Y-%m-%d %H:%M:%S', time.localtime(time.time()))
                 await channel.send("{} 님이 {} 활동을 시작했습니다.".format(before.name, after.activities[0].name))
-                informs[informs.index(filter(lambda x: x.member == before, informs)[0])].log.append(str + " {} 님이 {} 활동을 시작했습니다.".format(before.name, after.activities[0].name))
+                informs[informs.index(list(filter(lambda x: x.member == before, informs))[0])].log.append(str + " {} 님이 {} 활동을 시작했습니다.".format(before.name, after.activities[0].name))
 
   
 # 적발 횟수 출력
@@ -68,7 +68,7 @@ async def MyCnt(ctx):
 
     # 적발횟수를 묻는 대상이 감시 대상이라면
     if (ctx.author in map(lambda x: x.member, informs)) :
-        await ctx.send("{}님은 {}회 적발 되셨습니다.".format(ctx.author.name, len(informs[informs.index(filter(lambda x: x.member == ctx.author, informs)[0])].log)))
+        await ctx.send("{}님은 {}회 적발 되셨습니다.".format(ctx.author.name, len(informs[informs.index(list(filter(lambda x: x.member == ctx.author, informs))[0])].log)))
     # 감시 대상이 아닌경우
     else :
         await ctx.send("{}님은 감시대상이 아닙니다. 감시 대상으로 등록해주세요.".format(ctx.author.name))
@@ -80,8 +80,8 @@ async def MyLog(ctx):
     # 적발로그를 묻는 대상이 감시 대상이라면
     if (ctx.author in map(lambda x: x.member, informs)) :
             log = ''
-            for lognum in range (len(informs[informs.index(filter(lambda x: x.member == ctx.author, informs)[0])].log)):
-                log += "{}. {}\n".format(lognum + 1, informs[informs.index(filter(lambda x: x.member == ctx.author, informs)[0])].log[lognum])
+            for lognum in range (len(informs[informs.index(list(filter(lambda x: x.member == ctx.author, informs))[0])].log)):
+                log += "{}. {}\n".format(lognum + 1, informs[informs.index(list(filter(lambda x: x.member == ctx.author, informs))[0])].log[lognum])
 
             if(log == '') : 
                 await ctx.send("적발된 적이 없습니다.")
@@ -99,7 +99,7 @@ async def RemoveLog(ctx, membername, lognum):
     if (ctx.author.id == 271493892224843777):
         # 적발로그를 지우려는 대상이 감시 대상이라면
         if (ctx.author in map(lambda x: x.member, informs)) :
-            del(informs[informs.index(filter(lambda x: x.member == ctx.author, informs)[0])].log[int(lognum)-1])
+            del(informs[informs.index(list(filter(lambda x: x.member == ctx.author, informs))[0])].log[int(lognum)-1])
             await ctx.send("{}님의 {}번째 적발은 철회되었습니다.".format(membername, lognum))
         # 감시 대상이 아닌경우
         else :
@@ -116,7 +116,7 @@ async def Enroll(ctx):
         await ctx.send('{}님은 이미 감시중입니다.'.format(ctx.author.name))
    
     else :
-        member = informaiton(member = ctx.author)
+        member = informaiton(member = ctx.author, log = [])
         informs.append(member)
 
         await ctx.send ('{}님 감시를 시작합니다.'.format(ctx.author.name))
@@ -132,7 +132,7 @@ async def User(ctx):
         for cnt in range (len(informs)):
             if (cnt != 0) : 
                 membersName += ', '
-            membersName += informs[cnt].name
+            membersName += informs[cnt].member.name
         await ctx.send('현재 감시중인 인원수는 {} 명이고 인원은 {} 입니다.'.format(len(informs), membersName))    
     else :
         await ctx.send('현재 감시중인 인원은 없습니다.')
@@ -146,7 +146,7 @@ async def Clear(ctx):
         if (ctx.author in map(lambda x: x.member, informs)) :
             # 해당 감시 해제를 요청한 멤버를 감시 명단에서 제외
             # informs = list(filter(lambda x: x.member != ctx.author, informs))
-            del(informs[informs.index(filter(lambda x: x.member == ctx.author, informs)[0])])
+            del(informs[informs.index(list(filter(lambda x: x.member == ctx.author, informs))[0])])
             await ctx.send ('{}님 감시를 해제합니다.'.format(ctx.author.name))
         
         else :
