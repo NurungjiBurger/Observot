@@ -97,13 +97,17 @@ def log_data(type, user_id, time, activity, id):
     elif type == UPDATE:
         return None
     elif type == DELETE:
-        sql = "DELETE FROM log WHERE id = %s"
-        cur.execute(sql, id)
+        sql = "DELETE FROM log WHERE user_id = %s and id = %s"
+        cur.execute(sql, (user_id, id))
         con.commit()
         return None
     elif type == SELECT:
-        sql = "SELECT * FROM log where user_id = %s"
-        cur.execute(sql, user_id)
+        if id == 0:
+            sql = "SELECT * FROM log where user_id = %s"
+            cur.execute(sql, user_id)
+        else:
+            sql = "SELECT * FROM log where user_id = %s and id = %s"
+            cur.execute(sql, (user_id, id))
         result = cur.fetchall()
         con.commit()
         return result
@@ -190,10 +194,15 @@ async def my_log(ctx):
 async def remove_log(ctx, num):
 
     # 적발로그를 지우려는 대상이 감시 대상이라면
-    data = log_data(SELECT, ctx.author.id, 0, 0, 0)
-    if data:
-        log_data(DELETE, ctx.author.id, 0, 0, num)
-        await ctx.send("{}님의 {}번째 적발은 철회 되었습니다.".format(ctx.author.name, num))
+    udata = user_data(SELECT, ctx.author.id, 0)
+    if udata:
+        ldata = log_data(SELECT, ctx.author.id, 0, 0, num)
+        if ldata:
+            log_data(DELETE, ctx.author.id, 0, 0, num)
+            user_data(UPDATE, ctx.author.id, udata[0][1]-1)
+            await ctx.send("{}님의 {}번째 적발은 철회 되었습니다.".format(ctx.author.name, num))
+        else:
+            await ctx.send("{}님의 {}번째 적발은 존재하지 않습니다.".format(ctx.author.name, num))
     # 감시 대상이 아닌 경우
     else:
         await ctx.send("{}님은 감시 대상이 아닙니다.".format(ctx.author.name))
@@ -234,9 +243,9 @@ async def user(ctx):
     if data:
         membersName = ''
         for cnt in range(len(data)):
-            membersName += bot.get_user(data[cnt][0]).name
             if cnt >= 1:
                 membersName += ', '
+            membersName += bot.get_user(data[cnt][0]).name
         await ctx.send('현재 감시중인 인원수는 {} 명이고 인원은 {} 입니다.'.format(cnt+1, membersName))
     else:
         await ctx.send('현재 감시중인 인원은 없습니다.')
@@ -249,7 +258,8 @@ async def clear(ctx):
     data = user_data(SELECT, ctx.author.id, 0)
     if data:
         # 해당 감시 해제를 요청한 멤버를 감시 명단에서 제외
-        for num in range(data[0][1]):
+        ldata = log_data(SELECT, ctx.author.id, 0, 0, 0)
+        for num in range(len(ldata)):
             log_data(DELETE, ctx.author.id, 0, 0, num+1)
         user_data(DELETE, ctx.author.id, 0)
         await ctx.send('{}님 감시를 해제합니다.'.format(ctx.author.name))
