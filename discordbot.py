@@ -102,12 +102,8 @@ def log_data(type, user_id, time, activity, id):
         con.commit()
         return None
     elif type == SELECT:
-        if id == 0:
-            sql = "SELECT * FROM log where user_id = %s"
-            cur.execute(sql, user_id)
-        else:
-            sql = "SELECT * FROM log where user_id = %s and id = %s"
-            cur.execute(sql, (user_id, id))
+        sql = "SELECT * FROM log where user_id = %s"
+        cur.execute(sql, user_id)
         result = cur.fetchall()
         con.commit()
         return result
@@ -168,6 +164,27 @@ async def my_cnt(ctx):
     else:
         await ctx.send("{}님은 감시대상이 아닙니다. 감시 대상으로 등록해주세요.".format(ctx.author.name))
 
+def create_log(author_name, data):
+
+    """
+    list1 = str(num+1) / time join to "." str.split()
+
+    "000님이 ".join(list.add( list1, list2 ))
+
+    list2 = activity / /n join to "활동을 시작했습니다." str.split('\n')
+
+
+    list1 = list(map(list.__add__, str(num+1) , list(map(lambda x: data[x][2], data) + " ")
+
+    (list(map(list.__add__, list(map(lambda x: data[x][2], data) + " "), list(map(lambda x: data[x][3], data)))))
+    """
+
+    log = ''
+    for num in range(len(data)):
+        log += "{}".format( (str(num + 1) + ". " + data[num][2]) + " " + author_name + "님이 " + (data[num][3] + " 활동을 시작했습니다." + "\n"))
+
+    return log
+
 # 적발 로그 출력
 @slash.slash(name="Log", description="적발 로그를 출력 합니다.", guild_ids=guild_id)
 async def my_log(ctx):
@@ -176,12 +193,10 @@ async def my_log(ctx):
     udata = user_data(SELECT, ctx.author.id, 0)
     if udata:
         ldata = log_data(SELECT, ctx.author.id, 0, 0, 0)
-        log = ''
-        for num in range(len(ldata)):
-            log += "{}. {}\n".format(num + 1, ldata[num][2] + " " + ctx.author.name + "님이 " + ldata[num][3] + " 활동을 시작했습니다.")
+        log = create_log(ctx.author.name, ldata)
 
         if log == '':
-            await ctx.send("적발된 적이 없습니다.")
+            await ctx.send("적발된 내용이 없습니다.")
         else:
             await ctx.send(log)
 
@@ -196,13 +211,19 @@ async def remove_log(ctx, num):
     # 적발로그를 지우려는 대상이 감시 대상이라면
     udata = user_data(SELECT, ctx.author.id, 0)
     if udata:
-        ldata = log_data(SELECT, ctx.author.id, 0, 0, num)
+        ldata = log_data(SELECT, ctx.author.id, 0, 0, 0)
         if ldata:
-            log_data(DELETE, ctx.author.id, 0, 0, num)
-            user_data(UPDATE, ctx.author.id, udata[0][1]-1)
-            await ctx.send("{}님의 {}번째 적발은 철회 되었습니다.".format(ctx.author.name, num))
-        else:
-            await ctx.send("{}님의 {}번째 적발은 존재하지 않습니다.".format(ctx.author.name, num))
+            if int(num) > 0 and int(num) <= len(ldata):
+                log_data(DELETE, ctx.author.id, 0, 0, ldata[int(num)-1][0])
+                user_data(UPDATE, ctx.author.id, udata[0][1]-1)
+                await ctx.send("{}님의 {}번째 적발은 철회 되었습니다.".format(ctx.author.name, num))
+                log = create_log(ctx.author.name, log_data(SELECT, ctx.author.id, 0, 0, 0))
+                if log == '':
+                    await ctx.send("적발된 내용이 없습니다.")
+                else:
+                    await ctx.send(log)
+            else:
+                await ctx.send("{}님의 {}번째 적발은 존재하지 않습니다.".format(ctx.author.name, num))
     # 감시 대상이 아닌 경우
     else:
         await ctx.send("{}님은 감시 대상이 아닙니다.".format(ctx.author.name))
@@ -259,8 +280,9 @@ async def clear(ctx):
     if data:
         # 해당 감시 해제를 요청한 멤버를 감시 명단에서 제외
         ldata = log_data(SELECT, ctx.author.id, 0, 0, 0)
-        for num in range(len(ldata)):
-            log_data(DELETE, ctx.author.id, 0, 0, num+1)
+        length = len(ldata)
+        for num in length:
+            log_data(DELETE, ctx.author.id, 0, 0, ldata[num][0])
         user_data(DELETE, ctx.author.id, 0)
         await ctx.send('{}님 감시를 해제합니다.'.format(ctx.author.name))
     else :
