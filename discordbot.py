@@ -179,11 +179,8 @@ def create_log(author_name, data):
     (list(map(list.__add__, list(map(lambda x: data[x][2], data) + " "), list(map(lambda x: data[x][3], data)))))
     """
 
-    log = ''
-    for num in range(len(data)):
-        log += "{}".format( (str(num + 1) + ". " + data[num][2]) + " " + author_name + "님이 " + (data[num][3] + " 활동을 시작했습니다." + "\n"))
-
-    return log
+def create_log_msg(name, data):
+        return "\n".join([f"{idx + 1}. {log[2]} {name}님이 {log[3]} 활동을 시작했습니다." for idx, log in enumerate(data)])
 
 # 적발 로그 출력
 @slash.slash(name="Log", description="적발 로그를 출력 합니다.", guild_ids=guild_id)
@@ -193,7 +190,7 @@ async def my_log(ctx):
     udata = user_data(SELECT, ctx.author.id, 0)
     if udata:
         ldata = log_data(SELECT, ctx.author.id, 0, 0, 0)
-        log = create_log(ctx.author.name, ldata)
+        log = create_log_msg(ctx.author.name, ldata)
 
         if log == '':
             await ctx.send("적발된 내용이 없습니다.")
@@ -217,7 +214,7 @@ async def remove_log(ctx, num):
                 log_data(DELETE, ctx.author.id, 0, 0, ldata[int(num)-1][0])
                 user_data(UPDATE, ctx.author.id, udata[0][1]-1)
                 await ctx.send("{}님의 {}번째 적발은 철회 되었습니다.".format(ctx.author.name, num))
-                log = create_log(ctx.author.name, log_data(SELECT, ctx.author.id, 0, 0, 0))
+                log = create_log_msg(ctx.author.name, log_data(SELECT, ctx.author.id, 0, 0, 0))
                 if log == '':
                     await ctx.send("적발된 내용이 없습니다.")
                 else:
