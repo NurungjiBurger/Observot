@@ -14,6 +14,7 @@ HOST = os.getenv('HOST')
 USER = os.getenv('USER')
 PASSWORD = os.getenv('PASSWORD')
 DB = os.getenv('DB')
+CHEIFS = os.getenv('CHEIFS')
 
 con = pymysql.connect(host=HOST, user=USER, password=PASSWORD, db=DB, charset='utf8')
 #con = pymysql.connect(host='127.0.0.1', user='root', password='6195', db='test', charset='utf8')
@@ -295,42 +296,42 @@ async def my_log(ctx):
 
 # 적발 로그 지우기
 @slash.slash(name="RemoveLog", description="적발로그를 삭제합니다.", guild_ids=guild_id)
-async def remove_log(ctx, num):
+async def remove_log(ctx, name: discord.Member, num):
 
-    # 적발로그를 지우려는 대상이 감시 대상이라면
-    udata = user_data(SELECT, ctx.author.id, 0)
-    if udata:
-        ldata = log_data(SELECT, ctx.author.id, 0, 0, 0)
-        if ldata:
-            if int(num) > 0 and int(num) <= len(ldata):
-                log_data(DELETE, ctx.author.id, 0, 0, ldata[int(num)-1][0])
-                user_data(UPDATE, ctx.author.id, udata[0][1]-1)
-                await ctx.send("{}님의 {}번째 적발은 철회 되었습니다.".format(ctx.author.name, num))
-                log = create_msg(ctx.author.name, log_data(SELECT, ctx.author.id, 0, 0, 0), LOG)
-                if log == '':
-                    await ctx.send("적발된 내용이 없습니다.")
+    # 방장만 로그 삭제 가능
+    if any('방장' == role.name for idx, role in enumerate(name.roles)):
+        # 감시 대상 O
+        udata = user_data(SELECT, name.id, 0)
+        if udata:
+            ldata = log_data(SELECT, name.id, 0, 0, 0)
+            if ldata:
+                if int(num) > 0 and int(num) <= len(ldata):
+                    log_data(DELETE, name.id, 0, 0, ldata[int(num)-1][0])
+                    user_data(UPDATE, name.id, udata[0][1]-1)
+                    await ctx.send("{}님의 {}번째 적발은 철회 되었습니다.".format(name.name, num))
+                    log = create_msg(name.name, log_data(SELECT, ctx.author.id, 0, 0, 0), LOG)
+                    if log == '':
+                        await ctx.send("적발된 내용이 없습니다.")
+                    else:
+                        await ctx.send(log)
+                elif int(num) == -1:
+                    for cnt in range(len(ldata)):
+                        log_data(DELETE, name.id, 0, 0, ldata[cnt][0])
+                        user_data(UPDATE, name.id, udata[0][1]-1)
+                    await ctx.send("{}님의 모든 적발이 철회 되었습니다.".format(name.name))
+                    log = create_msg(name.name, log_data(SELECT, ctx.author.id, 0, 0, 0), LOG)
+                    if log == '':
+                        await ctx.send("적발된 내용이 없습니다.")
+                    else:
+                        await ctx.send(log)
                 else:
-                    await ctx.send(log)
-            else:
-                await ctx.send("{}님의 {}번째 적발은 존재하지 않습니다.".format(ctx.author.name, num))
-    # 감시 대상이 아닌 경우
-    else:
-        await ctx.send("{}님은 감시 대상이 아닙니다.".format(ctx.author.name))
-
-# 방장만 로그 삭제 할 수 있게 업데이트 ㄱ
-    """
-    if ctx.author.id == 271493892224843777:
-        data = log_data(SELECT, member.id, 0, 0, 0)
-        if data:
-            print("삭제하겠습니다")
-            #log_data(DELETE, name.id, 0, 0, num)
-            await ctx.send("{}님의 {}번째 적발은 철회 되었습니다.".format(member.name, num))
-        # 감시 대상이 아닌 경우
+                    await ctx.send("{}님의 {}번째 적발은 존재하지 않습니다.".format(ctx.author.name, num))
+        # 감시 대상 X
         else:
-            await ctx.send("{}님은 감시 대상이 아닙니다.".format(member.name))
+            await ctx.send("{}님은 감시 대상이 아닙니다.".format(ctx.author.name))
+    # 방장이 아님
     else:
-        await ctx.send("{}님 적발철회 권한이 없습니다. 방장에게 문의하세요.".format(ctx.author.name))
-    """
+        await ctx.send("{}님은 적발철회 권한이 없습니다. 방장에게 문의해주세요.".format(ctx.author.name))
 
 # 감시 등록
 @slash.slash(name="Enroll", description="감시대상에 등록합니다.", guild_ids=guild_id)
