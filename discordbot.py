@@ -299,7 +299,7 @@ async def my_log(ctx):
 async def remove_log(ctx, name: discord.Member, num):
 
     # 방장만 로그 삭제 가능
-    if any('방장' == role.name for idx, role in enumerate(name.roles)):
+    if any('방장' == role.name for idx, role in enumerate(ctx.author.roles)):
         # 감시 대상 O
         udata = user_data(SELECT, name.id, 0)
         if udata:
