@@ -309,7 +309,7 @@ async def remove_log(ctx, name: discord.Member, num):
                     log_data(DELETE, name.id, 0, 0, ldata[int(num)-1][0])
                     user_data(UPDATE, name.id, udata[0][1]-1)
                     await ctx.send("{}님의 {}번째 적발은 철회 되었습니다.".format(name.name, num))
-                    log = create_msg(name.name, log_data(SELECT, ctx.author.id, 0, 0, 0), LOG)
+                    log = create_msg(name.name, log_data(SELECT, name.id, 0, 0, 0), LOG)
                     if log == '':
                         await ctx.send("적발된 내용이 없습니다.")
                     else:
@@ -319,13 +319,13 @@ async def remove_log(ctx, name: discord.Member, num):
                         log_data(DELETE, name.id, 0, 0, ldata[cnt][0])
                         user_data(UPDATE, name.id, udata[0][1]-1)
                     await ctx.send("{}님의 모든 적발이 철회 되었습니다.".format(name.name))
-                    log = create_msg(name.name, log_data(SELECT, ctx.author.id, 0, 0, 0), LOG)
+                    log = create_msg(name.name, log_data(SELECT, name.id, 0, 0, 0), LOG)
                     if log == '':
                         await ctx.send("적발된 내용이 없습니다.")
                     else:
                         await ctx.send(log)
                 else:
-                    await ctx.send("{}님의 {}번째 적발은 존재하지 않습니다.".format(ctx.author.name, num))
+                    await ctx.send("{}님의 {}번째 적발은 존재하지 않습니다.".format(name.name, num))
         # 감시 대상 X
         else:
             await ctx.send("{}님은 감시 대상이 아닙니다.".format(ctx.author.name))
