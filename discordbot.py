@@ -45,8 +45,9 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 slash = SlashCommand(bot, sync_commands=True)
 guild_id = [961443814101360661]
 
+# 테이블이 있는지 체크하고 없다면 생성
 def table_check():
-
+    
     sql = "SHOW TABLES like 'user'"
     cur.execute(sql)
     result = cur.fetchall()
@@ -80,7 +81,7 @@ def table_check():
         cur.execute(sql)
         con.commit()
 
-
+# 유저 DB 관리
 def user_data(type, user_id, cnt):
 
     if type == INSERT:
@@ -109,6 +110,7 @@ def user_data(type, user_id, cnt):
         con.commit()
         return result
 
+# 예외 DB 관리
 def exception_data(type, user_id, activity):
 
     if type == INSERT:
@@ -138,7 +140,7 @@ def exception_data(type, user_id, activity):
         con.commit()
         return result
 
-
+# 로그 DB 관리
 def log_data(type, user_id, time, activity, id):
 
     if type == INSERT:
@@ -179,10 +181,13 @@ async def on_ready():
 # 봇 활동중 멤버의 변화 체크
 @bot.event
 async def on_member_update(before, after):
+    
+    # 구글 캘린더 // 휴일 이거나 금, 토, 일 이라면 제외
+    
 
-    # 토요일 일요일 제외
+    # 금요일 토요일 일요일 제외
     tms = datetime.now(timezone(timedelta(hours=9)))
-    if tms.weekday() >= 5:
+    if tms.weekday() >= 4:
         await bot.change_presence(status=discord.Status.online, activity=discord.Game("다같이 게임"))
         return
     else:
@@ -332,6 +337,27 @@ async def remove_log(ctx, name: discord.Member, num):
     # 방장이 아님
     else:
         await ctx.send("{}님은 적발철회 권한이 없습니다. 방장에게 문의해주세요.".format(ctx.author.name))
+
+# 방장 전용 적발 로그 출력
+@slash.slash(name="Member_Log", description="멤버의 적발 로그를 출력 합니다.", guild_ids=guild_id)
+async def member_log(ctx, name: discord.Member):
+
+    if any('방장' == role.name for idx, role in enumerate(ctx.author.roles)):
+        # 적발로그를 묻는 대상이 감시 대상이라면
+        udata = user_data(SELECT, name.id, 0)
+        if udata:
+            ldata = log_data(SELECT, name.id, 0, 0, 0)
+            log = create_msg(name.name, ldata, LOG)
+
+            if log == '':
+                await ctx.send("적발된 내용이 없습니다.")
+            else:
+                await ctx.send(log)
+        # 감시 대상이 아닌경우
+        else:
+            await ctx.send("{}님은 감시대상이 아닙니다. 감시 대상으로 등록해주세요.".format(ctx.author.name))
+    else:
+        await ctx.send("방장만 사용할수있는 기능입니다.")
 
 # 감시 등록
 @slash.slash(name="Enroll", description="감시대상에 등록합니다.", guild_ids=guild_id)
