@@ -9,25 +9,25 @@ After registering as a monitoring target, it is a Discord bot that monitors the 
 * /enroll
 * <img src="example/enroll0.png" width="300"> <img src="example/enroll1.png" width="300">
 * /log
-* <img src="example/log.png" width="300">
+* <img src="example/log.png" width="500">
 * /count
 * <img src="example/count.png" width="300">
 * /enrollexceptionactivity
-* <img src="example/enrollexceptionactivity0.png" width="300"> <img src="example/enrollexceptionactivity1.png" width="300">
+* <img src="example/enrollexceiptionactivity0.png" width="500"> <img src="example/enrollexceiptionactivity1.png" width="500">
 * /exceptionactivity
-* <img src="example/exceptionactivity.png" width="300">
+* <img src="example/exceiptionactivity0.png" width="300"> <img src="example/exceiptionactivity1.png" width="300">
 * /deleteexceiptionactivity
-* <img src="example/deleteexceptionactivity.png" width="300">
+* <img src="example/deleteexceiptionactivity.png" width="500">
 * /clear
 * <img src="example/clear.png" width="300">
 * /user
-* <img src="example/user.png" width="300">
+* <img src="example/user.png" width="500">
 
 ## only chief can use
 * /removelog
-* <img src="example/removelog.png" width="300">
+* <img src="example/removelog.png" width="500">
 * /member_log
-* <img src="example/member_log.png" width="300">
+* <img src="example/member_log.png" width="500">
 
 
 # APIs
