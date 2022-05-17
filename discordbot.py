@@ -16,8 +16,8 @@ PASSWORD = os.getenv('PASSWORD')
 DB = os.getenv('DB')
 CHEIFS = os.getenv('CHEIFS')
 
-#con = pymysql.connect(host=HOST, user=USER, password=PASSWORD, db=DB, charset='utf8')
-con = pymysql.connect(host='127.0.0.1', user='root', password='6195', db='test', charset='utf8')
+con = pymysql.connect(host=HOST, user=USER, password=PASSWORD, db=DB, charset='utf8')
+#con = pymysql.connect(host='127.0.0.1', user='root', password='6195', db='test', charset='utf8')
 
 cur = con.cursor()
 
