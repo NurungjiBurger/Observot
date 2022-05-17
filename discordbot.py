@@ -16,8 +16,8 @@ PASSWORD = os.getenv('PASSWORD')
 DB = os.getenv('DB')
 CHEIFS = os.getenv('CHEIFS')
 
-con = pymysql.connect(host=HOST, user=USER, password=PASSWORD, db=DB, charset='utf8')
-#con = pymysql.connect(host='127.0.0.1', user='root', password='6195', db='test', charset='utf8')
+#con = pymysql.connect(host=HOST, user=USER, password=PASSWORD, db=DB, charset='utf8')
+con = pymysql.connect(host='127.0.0.1', user='root', password='6195', db='test', charset='utf8')
 
 cur = con.cursor()
 
@@ -32,9 +32,11 @@ INSERT = "insert"
 UPDATE = "update"
 DELETE = "delete"
 SELECT = "select"
+COUNT = "count"
 
 LOG = "log"
 EXCEPTION = "exception"
+CNT = "cnt"
 
 intents = discord.Intents.all()
 client = discord.Client()
@@ -165,6 +167,12 @@ def log_data(type, user_id, time, activity, id):
         result = cur.fetchall()
         con.commit()
         return result
+    elif type == COUNT:
+        sql = "SELECT COUNT(*) FROM (SELECT * FROM log where user_id = %s) log"
+        cur.execute(sql, user_id)
+        result = cur.fetchall()
+        con.commit()
+        return result
 
 
 # 봇 활성화
@@ -181,9 +189,6 @@ async def on_ready():
 # 봇 활동중 멤버의 변화 체크
 @bot.event
 async def on_member_update(before, after):
-    
-    # 구글 캘린더 // 휴일 이거나 금, 토, 일 이라면 제외
-    
 
     # 금요일 토요일 일요일 제외
     tms = datetime.now(timezone(timedelta(hours=9)))
@@ -261,7 +266,15 @@ async def delete_except(ctx, activity: str):
             await ctx.send("{}님의 {}활동은 예외로 등록되어있지 않습니다.".format(ctx.author.name, activity))
     else:
         await ctx.send("{}님은 감시대상이 아닙니다.".format(ctx.author.name))
-  
+
+
+def create_msg(name, data, type):
+
+    if type == LOG:
+        return "\n".join([f"{idx + 1}. {log[2]} {name}님이 {log[3]} 활동을 시작했습니다." for idx, log in enumerate(data)])
+    elif type == EXCEPTION:
+        return "\n".join([f"예외활동 {idx + 1}. {log[1]}" for idx, log in enumerate(data)])
+
 # 적발 횟수 출력
 @slash.slash(name="Count", description="적발 횟수를 출력 합니다.", guild_ids=guild_id)
 async def my_cnt(ctx):
@@ -269,16 +282,10 @@ async def my_cnt(ctx):
     # 적발횟수를 묻는 대상이 감시 대상이라면
     data = user_data(SELECT, ctx.author.id, 0)
     if data:
-        await ctx.send("{}님은 {}회 적발 되셨습니다.".format(ctx.author.name, data[0][1]))
+        await ctx.send("{}님은 {}회 적발 되셨습니다.".format(ctx.author.name, log_data(COUNT, ctx.author.id, 0, 0, 0)[0][0]))
     # 감시 대상이 아닌경우
     else:
         await ctx.send("{}님은 감시대상이 아닙니다. 감시 대상으로 등록해주세요.".format(ctx.author.name))
-
-def create_msg(name, data, type):
-    if type == LOG:
-        return "\n".join([f"{idx + 1}. {log[2]} {name}님이 {log[3]} 활동을 시작했습니다." for idx, log in enumerate(data)])
-    elif type == EXCEPTION:
-        return "\n".join([f"예외활동 {idx + 1}. {log[1]}" for idx, log in enumerate(data)])
 
 # 적발 로그 출력
 @slash.slash(name="Log", description="적발 로그를 출력 합니다.", guild_ids=guild_id)
