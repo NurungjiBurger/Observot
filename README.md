@@ -7,6 +7,7 @@ After registering as a monitoring target, it is a Discord bot that monitors the 
 
 ## all memeber
 * /enroll
+* <img src="example/enroll0.png" width="300">
 * /log
 * /count
 * /enrollexceptionactivity
