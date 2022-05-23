@@ -7,7 +7,7 @@ After registering as a monitoring target, it is a Discord bot that monitors the 
 
 ## all memeber can use
 * /enroll
-* <img src="example/enroll0.png" width="350" height="100"> <img src="example/enroll1.png" width="350" height="100">
+* <img src="example/enroll0.png" width="20%" height="10%"> <img src="example/enroll1.png" width="350" height="100">
 * /log
 * <img src="example/log.png" width="600" height="100">
 * /count
