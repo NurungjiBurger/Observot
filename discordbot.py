@@ -9,9 +9,6 @@ from datetime import datetime, timezone, timedelta
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
-HOST = os.getenv('HOST')
-USER = os.getenv('USER')
-PASSWORD = os.getenv('PASSWORD')
 CHEIFS = os.getenv('CHEIFS')
 
 INSERT = "insert"
