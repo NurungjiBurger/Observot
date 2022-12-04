@@ -7,7 +7,10 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from datetime import datetime, timezone, timedelta
 
-
+load_dotenv()
+HOST = os.getenv('HOST')
+USER = os.getenv('USER')
+PASSWORD = os.getenv('PASSWORD')
 DB = os.getenv('DB')
 
 con = pymysql.connect(host=HOST, user=USER, password=PASSWORD, db=DB, charset='utf8')
