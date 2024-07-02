@@ -17,6 +17,7 @@
   - [명령어](#명령어)
 - [데이터베이스 스키마](#데이터베이스-스키마)
 - [기여](#기여)
+- [사용예시](#사용-예시)
 
 ## 기능
 
@@ -95,51 +96,89 @@ python discordbot.py
 
 ### 모든 멤버가 사용 가능
 
-/enroll
-<div align="left">
+<details>
+<summary>/enroll</summary>
+<div markdown="1" align="left">
  <img src="example/enroll0.png" width="400" height="120"> <img src="example/enroll1.png" width="400" height="120">
 </div>
-/log
-<div align="left">
+</details>
+
+<details>
+<summary>/log</summary>
+<div markdown="1" align="left">
   <img src="example/log.png" width="805" height="120">
 </div>
-/count
-<div align="left">
+</details>
+
+
+<details>
+<summary>/count</summary>
+<div markdown="1" align="left">
   <img src="example/count.png" width="400" height="120">
 </div>
-/enrollexceptionactivity
-<div align="left">
+</details>
+
+
+<details>
+<summary>/enrollexceptionactivity</summary>
+<div markdown="1" align="left">
   <img src="example/enrollexceiptionactivity0.png" width="440" height="130">
 </div>
-<div align="left">
+<div markdown="1" align="left">
   <img src="example/enrollexceiptionactivity1.png" width="460" height="130">
 </div>
-/exceptionactivity
-<div align="left">
+</details>
+
+
+<details>
+<summary>/exceptionactivity</summary>
+<div markdown="1" align="left">
  <img src="example/exceiptionactivity0.png" width="420" height="120"> <img src="example/exceptionactivity1.png" width="420" height="120">
 </div>
-/deleteexceiptionactivity
-<div align="left">
+</details>
+
+<details>
+<summary>/deleteexceptionactivity</summary>
+<div markdown="1" align="left">
  <img src="example/deleteexceiptionactivity.png" width="600" height="120">
 </div>
-/clear
-<div align="left">
+</details>
+
+
+<details>
+<summary>/clear</summary>
+<div markdown="1" align="left">
  <img src="example/clear.png" width="400" height="120">
 </div>
-/user
-<div align="left">
+</details>
+
+
+<details>
+<summary>/user</summary>
+<div markdown="1" align="left">
  <img src="example/user.png" width="600" height="120">
 </div>
+</details>
+
 ### 관리자만 사용 가능
-/removelog
-<div align="left">
+
+
+<details>
+<summary>/removelog</summary>
+<div markdown="1" align="left">
  <img src="example/removelog.png" width="450" height="240">
 </div>
-/member_log
-<div align="left">
+</details>
+
+
+<details>
+<summary>/member_log</summary>
+<div markdown="1" align="left">
  <img src="example/member_log.png" width="800" height="120">
 </div>
+</details>
 
 # APIs
-* Dicord.py
+Dicord.py
+
 [discord.py](https://discordpy.readthedocs.io/en/stable/api.html)
